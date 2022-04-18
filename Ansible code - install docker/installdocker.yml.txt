@@ -1,0 +1,31 @@
+- name: Configure EC2 instance
+  hosts: ec2
+  connection: ssh
+  become: yes
+
+  tasks:
+  - name: Update the machine
+    command: sudo apt clean && update -y
+
+    
+  - name: Install basic list of packages
+    apt:
+      name: ['apt-transport-https','ca-certificates','curl','gnupg2','software-properties-common']
+      state: present
+      update_cache: no
+
+  - name: Add Docker GPG apt Key
+    apt_key: url=https://download.docker.com/linux/ubuntu/gpg
+
+
+  - name: Add Docker Repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+    
+  - name: Install Docker packages
+    apt:
+      name: ['docker-ce','docker-ce-cli','containerd.io']
+      state: present
+#TO RUN
+# create a file called host and add your host ip address
+#ansible-playbook -i host docker.yml
